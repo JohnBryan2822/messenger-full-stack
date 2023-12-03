@@ -48,7 +48,8 @@ public class User implements UserDetails {
 
     private String password;
     
-    @Column(nullable = true)
+    private Status status;
+    
     private Date lastSeen;
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

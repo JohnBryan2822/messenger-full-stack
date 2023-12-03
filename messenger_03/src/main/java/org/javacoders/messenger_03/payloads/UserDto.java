@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.javacoders.messenger_03.model.Status;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -23,6 +25,7 @@ public class UserDto {
 	@Email(message = "Email address is not valid !!!")
 	private String email;
 	private String password;
+	private Status status;
 	private Date lastSeen;
 	private Set<RoleDto> roles = new HashSet<>();
 }

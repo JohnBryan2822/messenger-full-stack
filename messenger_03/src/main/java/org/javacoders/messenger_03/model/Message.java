@@ -35,6 +35,10 @@ public class Message {
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private User sender;
 	
+	@ManyToOne
+    @JoinColumn(name = "recipient_id", referencedColumnName = "id")
+	private User recipient;
+	
 	@Column(nullable = false, length = 500)
     private String messageText;
 	

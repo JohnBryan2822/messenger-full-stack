@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "chats")
@@ -32,11 +34,11 @@ public class Chat {
 	
 	@ManyToOne
     @JoinColumn(name = "user1_id", referencedColumnName = "id")
-    private User user1;
+    private User sender;
 
     @ManyToOne
     @JoinColumn(name = "user2_id", referencedColumnName = "id")
-    private User user2;
+    private User recipient;
     
     @Column(nullable = false)
 	private Date createdOn;

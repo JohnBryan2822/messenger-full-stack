@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.javacoders.messenger_03.config.AppConstants;
 import org.javacoders.messenger_03.exceptions.ApiException;
+import org.javacoders.messenger_03.model.Status;
 import org.javacoders.messenger_03.model.User;
 import org.javacoders.messenger_03.payloads.JwtAuthenticationRequest;
 import org.javacoders.messenger_03.payloads.JwtAuthenticationResponse;
@@ -17,6 +18,7 @@ import org.javacoders.messenger_03.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -64,11 +66,16 @@ public class AuthenticationController {
 		User user = this.userRepository
 				.findByUsername(request.getUsername())
 				.orElseThrow();
+		
+		user.setStatus(Status.ONLINE);
+		
 		String token = this.jwtTokenHelper.generateToken(user);
 		JwtAuthenticationResponse response = new JwtAuthenticationResponse();
 		response.setToken(token);
 		
-		return new ResponseEntity<UserDto>(this.modelMapper.map(user, UserDto.class), HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", token);
+		return ResponseEntity.ok().headers(headers).body(this.modelMapper.map(user, UserDto.class));
 	}
 	
 	@PostMapping("/register")
@@ -120,11 +127,17 @@ public class AuthenticationController {
 		userDto.setEmail(email);
 		userDto.setPassword(newPasswordRequest.getPassword());
 		
-		this.userService.registerNewUser(userDto);
+		User user = this.modelMapper.map(userDto, User.class);
 		
-		User user = this.userRepository.findByUsername(username).orElseThrow();
-	
-		return new ResponseEntity<UserDto>(this.modelMapper.map(user, UserDto.class), HttpStatus.CREATED);
+		user.setStatus(Status.ONLINE);
+		
+		String token = this.jwtTokenHelper.generateToken(user);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer " + token);
+		
+		UserDto newUser = this.userService.registerNewUser(userDto);
+		
+		return ResponseEntity.ok().headers(headers).body(newUser);
 	}
 	
 	private void authenticate(String username, String password) throws Exception {

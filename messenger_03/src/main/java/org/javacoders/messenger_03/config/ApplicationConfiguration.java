@@ -74,6 +74,9 @@ public class ApplicationConfiguration {
         config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Update with your frontend URL
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "X-Requested-With", "Accept"));
+        
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+        
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

@@ -18,6 +18,11 @@
 	</properties>
 	<dependencies>
 		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
 		<dependency>
 		    <groupId>com.sun.mail</groupId>
@@ -31,16 +36,12 @@
 		    <artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
-	
 	    <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
 		<dependency>
 		    <groupId>redis.clients</groupId>
 		    <artifactId>jedis</artifactId>
-		    <version>5.1.0</version>
 		</dependency>
 
-
-		
 		<dependency>
 		    <groupId>io.jsonwebtoken</groupId>
 		    <artifactId>jjwt-api</artifactId>
