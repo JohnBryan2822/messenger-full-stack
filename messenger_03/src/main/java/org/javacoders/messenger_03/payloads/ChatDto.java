@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatDto {
 	
-	private Long chatId;
+	private String chatId;
 	private Long user1;
 	private Long user2;
 	private Date createdOn;

@@ -5,8 +5,8 @@ import java.util.List;
 import org.javacoders.messenger_03.model.Message;
 import org.javacoders.messenger_03.model.Notification;
 import org.javacoders.messenger_03.model.UnreadMessageCount;
+import org.javacoders.messenger_03.payloads.MessageDto;
 import org.javacoders.messenger_03.payloads.UserDto;
-import org.javacoders.messenger_03.repository.UnreadMessageCountRepository;
 import org.javacoders.messenger_03.services.ChatService;
 import org.javacoders.messenger_03.services.MessageService;
 import org.springframework.http.HttpStatus;
@@ -14,23 +14,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/messenger")
 public class ChatController {
 	
 	private final ChatService chatService;
 	private final MessageService messageService;
 	private final SimpMessagingTemplate messagingTemplate;
 	
-	@GetMapping("/chats/{userId}")
+	@GetMapping("/messenger/chats/{userId}")
 	public ResponseEntity<List<UserDto>> getAvailableChatsForUser(@PathVariable Long userId){
 		
 		List<UserDto> contactsForUser = this.chatService.getChatsForUser(userId);
@@ -39,39 +39,35 @@ public class ChatController {
 	}
 	
 	@MessageMapping("/chat")
-	public void processMessage(@Payload Message message) {
-		
+	public void processMessage(@Payload MessageDto message) {
 		System.out.println();
 		System.out.println(message.getMessageText());
-		System.out.println();
-		
-		Message savedMsg = this.messageService.saveNewMessage(message);
+		MessageDto savedMsg = this.messageService.saveNewMessage(message);
 		
 		int unreadMessageCount = this.messageService
-				.updateUnreadMessageCount(message.getSender().getId(), message.getRecipient().getId());
+				.updateUnreadMessageCount(message.getSenderId(), message.getRecipientId());
 		
 		messagingTemplate.convertAndSendToUser(
-				Long.toString(savedMsg.getRecipient().getId()), "/queue/messages",
+				Long.toString(savedMsg.getRecipientId()), "/queue/messages",
 				new Notification(
 						savedMsg.getMessageId(),
-						savedMsg.getSender().getId(),
-						savedMsg.getRecipient().getId(),
+						savedMsg.getSenderId(),
+						savedMsg.getRecipientId(),
 						savedMsg.getMessageText(),
 						unreadMessageCount));
 	}
 	
-	@GetMapping("/messages/{senderId}/{recipientId}")
-	public ResponseEntity<List<Message>> findChatMessages(
-			@PathVariable Long senderId,
-			@PathVariable Long recipientId){
+	@GetMapping("/messenger/messages/{myId}/{userId}")
+	public ResponseEntity<List<MessageDto>> findChatMessages(
+			@PathVariable Long myId,
+			@PathVariable Long userId){
+		this.messageService.setUnreadMessageCountToZero(myId, userId);
 		
-		this.messageService.setUnreadMessageCountToZero(senderId, recipientId);
-		
-		return ResponseEntity.ok(this.messageService.getMessagesForChat(senderId, recipientId));
+		return ResponseEntity.ok(this.messageService.getMessagesForChat(myId, userId));
 	}
 	
 //	/messages/{senderId}/{recipientId}/unreadCount
-	@GetMapping("/messages/{senderId}/{recipientId}/unreadCount")
+	@GetMapping("/messenger/messages/{senderId}/{recipientId}/unreadCount")
 	public ResponseEntity<UnreadMessageCount> getUnreadMessageCount(
 			@PathVariable Long senderId,
 			@PathVariable Long recipientId) {

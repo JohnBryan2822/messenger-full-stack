@@ -74,7 +74,7 @@ public class AuthenticationController {
 		response.setToken(token);
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", token);
+		headers.add("Authorization", "Bearer " + token);
 		return ResponseEntity.ok().headers(headers).body(this.modelMapper.map(user, UserDto.class));
 	}
 	
@@ -135,6 +135,8 @@ public class AuthenticationController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer " + token);
 		
+		System.out.println();
+		System.out.println("here is it coming");
 		UserDto newUser = this.userService.registerNewUser(userDto);
 		
 		return ResponseEntity.ok().headers(headers).body(newUser);

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContactDto {
 	
-	private Long contactId;
+	private String contactId;
 	private Long userId;
 	private Long contactUserId;
 	private Date addedOn;

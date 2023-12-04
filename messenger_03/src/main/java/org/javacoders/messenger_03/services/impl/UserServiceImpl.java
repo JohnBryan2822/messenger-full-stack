@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	
 	// Temporary DB while registration process
@@ -39,6 +38,16 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ModelMapper modelMapper;
+
+	public UserServiceImpl(RedisTemplate<String, String> redisTemplate, UserRepository userRepository,
+			RoleRepository roleRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+		super();
+		this.redisTemplate = redisTemplate;
+		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.modelMapper = modelMapper;
+	}
 
 	@Override
 	public UserDto registerNewUser(UserDto userDto) {
