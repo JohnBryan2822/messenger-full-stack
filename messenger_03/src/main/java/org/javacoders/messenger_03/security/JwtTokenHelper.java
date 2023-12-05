@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.javacoders.messenger_03.config.AppConstants;
+import org.javacoders.messenger_03.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,10 @@ public class JwtTokenHelper {
 	// extract Username from Token
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
+	}
+	
+	public Long getIdFromToken(String token) {
+	    return getClaimFromToken(token, claims -> claims.get("userId", Long.class));
 	}
 	
 	// extract Expiration date from Token
@@ -58,12 +63,17 @@ public class JwtTokenHelper {
 	}
 	
 	// generate token from UserDetails
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
+	public String generateToken(User userDetails) {
+		Map<String, Long> claims = new HashMap<>();
+		if(userDetails.getId() != null) {
+			claims.put("userId", userDetails.getId());
+		}
+		
+		return generateToken(claims, userDetails);
 	}
 	
 	// Implementation of generating Token
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+	public String generateToken(Map<String, Long> extraClaims, UserDetails userDetails) {
 		return Jwts
 				.builder()
 				.setClaims(extraClaims)

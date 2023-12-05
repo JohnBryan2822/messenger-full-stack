@@ -14,5 +14,4 @@ public class Notification {
 	private Long senderId;
 	private Long recipientId;
 	private String content;
-	private int unreadMessages;
 }

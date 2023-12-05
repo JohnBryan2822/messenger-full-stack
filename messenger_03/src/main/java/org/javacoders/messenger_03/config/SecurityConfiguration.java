@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 public class SecurityConfiguration {
 	
-	public static final String[] PUBLIC_URLS = {"/messenger/authentication/**"};
+	public static final String[] PUBLIC_URLS = {"/messenger/authentication/**", "/ws/**"};
 	
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

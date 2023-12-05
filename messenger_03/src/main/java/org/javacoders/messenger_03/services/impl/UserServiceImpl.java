@@ -25,6 +25,8 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 
@@ -50,21 +52,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto registerNewUser(UserDto userDto) {
-		User user = this.modelMapper.map(userDto, User.class);
-		
+	public UserDto registerNewUser(User user) {
 		user.setPassword(this.passwordEncoder.encode(user.getPassword()));
 		
 		Role role = this.roleRepository.findById(AppConstants.NORMAL_USER).get();
 		user.getRoles().add(role);
 		
 		User newUser = this.userRepository.save(user);
-		
 		return this.modelMapper.map(newUser, UserDto.class);
 	}
 
 	@Override
-	public boolean sendVerificationToEmail(String email) {
+	public boolean sendVerificationToEmail(String username, String email) {
 		String randomCode = generateConfirmationCode();
 		
 		Properties properties = new Properties();
@@ -97,7 +96,7 @@ public class UserServiceImpl implements UserService {
             Transport.send(code);
             
             ValueOperations<String, String> operations = redisTemplate.opsForValue();
-    		operations.set(email, randomCode, 3, TimeUnit.MINUTES);
+    		operations.set(username, randomCode, 3, TimeUnit.MINUTES);
     		
     		return true;
 
@@ -124,4 +123,18 @@ public class UserServiceImpl implements UserService {
 		Random random = new Random();
 		return Integer.toString(100000 + random.nextInt(900000));
 	}
+
+	@Override
+	public String extractJwtFromRequest(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        System.out.println("this is cookies" + cookies);
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwtToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 }

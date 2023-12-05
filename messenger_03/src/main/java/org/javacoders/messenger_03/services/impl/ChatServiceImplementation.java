@@ -43,7 +43,11 @@ public class ChatServiceImplementation implements ChatService {
 	
 	@Override
 	public Chat getChat(Long senderId, Long recipientId) {
-		String chatId = senderId + "_" + recipientId;		
+		if(senderId == recipientId) {
+			throw new RuntimeException("Sender and recipient cannot be the same");
+		}
+		
+		String chatId = senderId + "_" + recipientId;
 		if(senderId > recipientId)
 			chatId = recipientId + "_" + senderId;
 			
@@ -56,7 +60,7 @@ public class ChatServiceImplementation implements ChatService {
 
 	private Chat createChat(Long senderId, Long recipientId) {
 		
-		String chatId = senderId + "_" + recipientId;		
+		String chatId = senderId + "_" + recipientId;
 		if(senderId > recipientId)
 			chatId = recipientId + "_" + senderId;
 		

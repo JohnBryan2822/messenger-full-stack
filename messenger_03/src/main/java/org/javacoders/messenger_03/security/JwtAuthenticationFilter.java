@@ -2,6 +2,7 @@ package org.javacoders.messenger_03.security;
 
 import java.io.IOException;
 
+import org.javacoders.messenger_03.services.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -22,25 +24,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	private UserDetailsService userDetailsService;
 	private JwtTokenHelper jwtTokenHelper;
+	private final UserService userService;
 	
-	public JwtAuthenticationFilter(UserDetailsService userDetailsService, JwtTokenHelper jwtTokenHelper) {
+	public JwtAuthenticationFilter(UserDetailsService userDetailsService, JwtTokenHelper jwtTokenHelper,
+			UserService userService) {
 		this.userDetailsService = userDetailsService;
 		this.jwtTokenHelper = jwtTokenHelper;
+		this.userService = userService;
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String requestToken = request.getHeader("Authorization");
+		String requestToken = this.userService.extractJwtFromRequest(request);
+		
+		System.out.println(requestToken);
+		
 		
 		String username = null;
-		String token = null;
 		
-		if(requestToken != null && requestToken.startsWith("Bearer ")) {
-			token = requestToken.substring(7);
+		if(requestToken != null && !requestToken.isEmpty()) {
 			
 			try {
-				username = this.jwtTokenHelper.getUsernameFromToken(token);
+				username = this.jwtTokenHelper.getUsernameFromToken(requestToken);
 				
 			} catch (IllegalArgumentException e) {
 				System.out.println("Unable to get Jwt token");
@@ -59,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 			
-			if(this.jwtTokenHelper.validateToken(token, userDetails)) {
+			if(this.jwtTokenHelper.validateToken(requestToken, userDetails)) {
 				UsernamePasswordAuthenticationToken authToken = 
 						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource()
@@ -72,6 +78,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		} else {
 			System.out.println("Username is null or context is not null");
 		}
+		
 		filterChain.doFilter(request, response);
 	}
+	
 }

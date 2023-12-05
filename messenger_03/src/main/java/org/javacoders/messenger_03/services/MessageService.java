@@ -11,7 +11,4 @@ import org.springframework.stereotype.Service;
 public interface MessageService {
 	List<MessageDto> getMessagesForChat(Long senderId, Long recipientId);
 	MessageDto saveNewMessage(MessageDto messageDto);
-	int updateUnreadMessageCount(Long senderId, Long recipientId);
-	void setUnreadMessageCountToZero(Long senderId, Long recipientId);
-	UnreadMessageCount getUnreadMessageCount(Long senderId, Long recipientId);
 }
