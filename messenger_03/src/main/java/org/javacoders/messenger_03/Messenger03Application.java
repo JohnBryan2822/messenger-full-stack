@@ -40,8 +40,7 @@ public class Messenger03Application implements CommandLineRunner {
 			role2.setId(AppConstants.NORMAL_USER);
 			role2.setName("ROLE_NORMAL");
 			
-			List<Role> result = this.roleRepository.saveAll(List.of(role1, role2));
-			
+			this.roleRepository.saveAll(List.of(role1, role2));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

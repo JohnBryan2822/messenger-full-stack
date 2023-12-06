@@ -1,6 +1,5 @@
 package org.javacoders.messenger_03.controllers;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;

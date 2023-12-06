@@ -2,14 +2,12 @@ package org.javacoders.messenger_03.services.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.javacoders.messenger_03.model.Chat;
 import org.javacoders.messenger_03.model.User;
 import org.javacoders.messenger_03.payloads.UserDto;
 import org.javacoders.messenger_03.repository.ChatRepository;
-import org.javacoders.messenger_03.repository.MessageRepository;
 import org.javacoders.messenger_03.repository.UserRepository;
 import org.javacoders.messenger_03.services.ChatService;
 import org.modelmapper.ModelMapper;
@@ -24,7 +22,6 @@ public class ChatServiceImplementation implements ChatService {
 	private final ChatRepository chatRepository;
 	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
-	private final MessageRepository messageRepository;
 
 	@Override
 	public List<UserDto> getChatsForUser(Long userId) {
@@ -42,7 +39,7 @@ public class ChatServiceImplementation implements ChatService {
 	}
 	
 	@Override
-	public Chat getChat(Long senderId, Long recipientId) {
+	public Chat getChat(Long senderId, Long recipientId, boolean createNewRoomIfNotExists) {
 		if(senderId == recipientId) {
 			throw new RuntimeException("Sender and recipient cannot be the same");
 		}
@@ -51,11 +48,8 @@ public class ChatServiceImplementation implements ChatService {
 		if(senderId > recipientId)
 			chatId = recipientId + "_" + senderId;
 			
-		return this.chatRepository.findById(chatId).orElse(createChat(senderId, recipientId));
-
-//		return this.messageRepository
-//				.findBySenderAndRecipient(sender, recipient)
-//				.orElse(createChat(sender, recipient));
+		return this.chatRepository.findById(chatId)
+				.orElse(createNewRoomIfNotExists ? createChat(senderId, recipientId) : null);
 	}
 
 	private Chat createChat(Long senderId, Long recipientId) {
@@ -67,7 +61,7 @@ public class ChatServiceImplementation implements ChatService {
 		User user1 = this.userRepository.findById(senderId).orElseThrow();
 		User user2 = this.userRepository.findById(recipientId).orElseThrow();
 		
-		Chat chat = this.chatRepository.save(new Chat(chatId, user1, user2, new Date(), null));
+		Chat chat = this.chatRepository.save(new Chat(chatId, user1, user2, new Date()));
 		return chat;
 	}
 }

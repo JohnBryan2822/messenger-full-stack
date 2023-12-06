@@ -1,10 +1,16 @@
 package org.javacoders.messenger_03.exceptions;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class ResourceNotFoundException extends RuntimeException {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String resourceName;
 	private String fieldName;
 	private long fieldValue;

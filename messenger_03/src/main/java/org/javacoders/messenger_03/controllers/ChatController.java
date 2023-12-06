@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.javacoders.messenger_03.model.Notification;
 import org.javacoders.messenger_03.payloads.MessageDto;
 import org.javacoders.messenger_03.payloads.NewMessage;
 import org.javacoders.messenger_03.payloads.UserDto;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class ChatController {
 	
@@ -66,11 +64,8 @@ public class ChatController {
 		return new ResponseEntity<List<UserDto>>(contactsForUser, HttpStatus.OK);
 	}
 	
-//	/user/2/queue/messages
 	@MessageMapping("/chat")
 	public void processMessage(@Payload NewMessage message) {
-		
-		System.out.println(message.getMessageText());
 		
 		MessageDto messageDto = MessageDto.builder()
 				.senderId(message.getSenderId())

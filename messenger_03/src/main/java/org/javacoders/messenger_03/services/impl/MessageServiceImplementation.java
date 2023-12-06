@@ -26,7 +26,7 @@ public class MessageServiceImplementation implements MessageService {
 	@Override
 	public List<MessageDto> getMessagesForChat(Long myId, Long chatUserId) {
 		
-		Chat chat = this.chatService.getChat(myId, chatUserId);
+		Chat chat = this.chatService.getChat(myId, chatUserId, false);
 		
 		List<Message> messages = this.messageRepository.findByChat(chat);
 		if(messages == null) messages = new ArrayList<>();
@@ -46,7 +46,7 @@ public class MessageServiceImplementation implements MessageService {
 	@Override
 	public MessageDto saveNewMessage(MessageDto messageDto) {
 		Chat chat = this.chatService
-				.getChat(messageDto.getSenderId(), messageDto.getRecipientId());
+				.getChat(messageDto.getSenderId(), messageDto.getRecipientId(), true);
 		
 		Message message = Message.builder()
 				.sender(this.userRepository.findById(messageDto.getSenderId()).orElseThrow())

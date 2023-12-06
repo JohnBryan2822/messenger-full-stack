@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 public interface ChatService {
 	
 	List<UserDto> getChatsForUser(Long userId);
-	Chat getChat(Long senderId, Long recipientId);
+	Chat getChat(Long senderId, Long recipientId, boolean shouldCreate);
 }

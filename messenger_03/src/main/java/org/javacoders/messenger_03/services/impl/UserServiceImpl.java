@@ -1,8 +1,10 @@
 package org.javacoders.messenger_03.services.impl;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.javacoders.messenger_03.config.AppConstants;
 import org.javacoders.messenger_03.model.Role;
@@ -134,4 +136,25 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+	@Override
+	public List<UserDto> searchUsersByUsername(String username) {
+		List<User> usersList = this.userRepository.findByUsernameOrUsernameStartsWith(username, username);
+		List<UserDto> searchResult = usersList.stream().map(user -> {
+			return UserDto.builder()
+					.id(user.getId())
+					.username(user.getUsername())
+					.build();
+		}).collect(Collectors.toList());
+		return searchResult;
+	}
 }
+
+
+
+
+
+
+
+
+

@@ -4,22 +4,23 @@ import java.util.List;
 
 import org.javacoders.messenger_03.payloads.UserDto;
 import org.javacoders.messenger_03.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "http://localhost:3000")
+import lombok.RequiredArgsConstructor;
+
 @RestController
-@RequestMapping("/messenger/users")
+@RequiredArgsConstructor
 public class UserController {
 	
 	private final UserService userService;
 	
-	public UserController(UserService userService) {
-		this.userService = userService;
+	@GetMapping("/messenger/search-user")
+	public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String username){
+		List<UserDto> searchResult = this.userService.searchUsersByUsername(username);
+		return new ResponseEntity<List<UserDto>>(searchResult, HttpStatus.OK);
 	}
-	
-	
 }
